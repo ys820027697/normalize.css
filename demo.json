@@ -1,1 +1,160 @@
 
+{
+  "git.path": "D:/D1/Git/unins000.exe",
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "wxml": "html"
+  },
+      "[javascript]": {
+          "editor.defaultFormatter": "vscode.typescript-language-features"
+      },
+      "git.enableSmartCommit": true,
+      "explorer.confirmDragAndDrop": false,
+      "javascript.preferences.quoteStyle": "single",
+      "explorer.confirmDelete": false,
+      "javascript.updateImportsOnFileMove.enabled": "always",
+      "liveServer.settings.port": 5502,
+      "typescript.validate.enable": false,
+      "javascript.validate.enable": false,
+      "projectManager.git.baseFolders": [
+        "vue-bj",
+        ""
+      ],
+      "eslint.codeAction.showDocumentation": {
+          // "autoFixOnSave":false,
+          "enable": true
+      },
+      "eslint.codeActionsOnSave.mode": "problems",
+      "eslint.probe": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact",
+          "html",
+          "vue",
+          "markdown",
+          "ts"
+      ],
+      "[typescript]": {
+          "editor.defaultFormatter": "vscode.typescript-language-features"
+      },
+      "[vue]": {
+          "editor.defaultFormatter": "vscode.typescript-language-features"
+          // vscode.typescript-language-features
+      },
+          "editor.inlayHints.enabled": false,
+          // 重新设定tabsize
+          "editor.tabSize": 2,
+          // #每次保存的时候自动格式化
+          "editor.formatOnSave": false,
+          "eslint.validate": [
+              "javascript",
+              "javascriptreact",
+              "html",
+              "vue"
+          ],
+          // #每次保存的时候将代码按eslint格式进行修复
+
+          "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "explicit"
+          },
+          //  #让prettier使用eslint的代码格式进行校验
+          "prettier.eslintIntegration": true,
+          //  #去掉代码结尾的分号
+          "prettier.semi": false,
+          //  #使用带引号替代双引号
+          "prettier.singleQuote": true,
+          //  #让函数(名)和后面的括号之间加个空格
+          // "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+          // #让vue中的js按编辑器自带的ts格式进行格式化
+          // "vetur.format.defaultFormatter.js": "vscode-typescript",
+          // "vetur.format.defaultFormatter.html":"prettyhtml",
+          "vetur.format.defaultFormatter.html": "js-beautify-html",
+          "vetur.format.defaultFormatter.js": "vscode-typescript",
+          "vetur.format.defaultFormatterOptions": {
+              "js-beautify-html": {
+                  "wrap_line_length": 240,
+                  "wrap_attributes": "auto",
+                  "end_with_newline": false
+              },
+              "prettyhtml": {
+                  "printWidth": 100,
+                  "singleQuote": false,
+                  "wrapAttributes": false,
+                  "sortAttributes": false
+              }
+          },
+          //
+          "vetur.format.options.tabSize": 4,
+          "editor.renderControlCharacters": true,
+          "editor.renderWhitespace": "all",
+          "security.workspace.trust.untrustedFiles": "open",
+          "[json]": {
+            "editor.defaultFormatter": "esbenp.prettier-vscode"
+          },
+          "[html]": {
+            "editor.defaultFormatter": "esbenp.prettier-vscode"
+          },
+          "files.associations": {
+            "*.cjson": "jsonc",
+            "*.wxss": "css",
+            "*.wxs": "javascript",
+            "*.md": "markdown"
+          },
+          "minapp-vscode.disableAutoConfig": true,
+          "terminal.integrated.commandsToSkipShell": [
+            "psl.stepIn",
+            "psl.stepOut",
+            "psl.stepOver",
+            "psl.sendToHostTerminal"
+          ],
+          "workbench.editorAssociations": {
+            "*.copilotmd": "vscode.markdown.preview.editor",
+            "*.dat": "default",
+            "*.svg": "default"
+          },
+          "git.confirmSync": false,
+          "diffEditor.ignoreTrimWhitespace": false,
+          "vscode-office.openOutline": false,
+          "[python]": {
+            "editor.formatOnType": true
+          },
+          "Lingma.LocalStoragePath": "C:\\Users\\尹尚\\.lingma",
+          "dart.flutterSdkPath": "D:\\flutterSDK\\flutter",
+          "[scss]": {
+            "editor.defaultFormatter": "vscode.css-language-features"
+          },
+          "svg.preview.mode": "svg",
+          "git.ignoreRebaseWarning": true,
+          "breadcrumbs.enabled": false,
+          "editor.stickyScroll.enabled": false,
+          "gitlens.views.scm.grouped.views": {
+            "commits": true,
+            "branches": true,
+            "remotes": true,
+            "stashes": true,
+            "tags": true,
+            "worktrees": true,
+            "contributors": true,
+            "repositories": false,
+            "searchAndCompare": true,
+            "launchpad": true
+          },
+          "git.openRepositoryInParentFolders": "never",
+          "projectManager.checkInvalidPathsBeforeListing": false,
+          "editor.detectIndentation": false,
+          "editor.dropIntoEditor.preferences": [],
+          "[markdown]": {
+            "editor.unicodeHighlight.ambiguousCharacters": false,
+            "editor.unicodeHighlight.invisibleCharacters": false,
+            "diffEditor.ignoreTrimWhitespace": false,
+            "editor.wordWrap": "on",
+            "editor.quickSuggestions": {
+              "comments": "off",
+              "strings": "off",
+              "other": "off"
+            }
+          },
+          "diffEditor.maxComputationTime": 0,
+
+}
