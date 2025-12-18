@@ -1,477 +1,240 @@
 <template>
-  <div class="app-container">
-    <!-- 查询区域 -->
-    <div class="queryWrap regular_shadow_tiling">
-      <el-form :model="queryParams" label-position="top" @submit.prevent>
-        <el-row :gutter="16">
-          <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-            <el-form-item label="机构">
-              <el-select
-                v-model="queryParams.organization"
-                placeholder="请选择机构"
-                clearable
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="item in organizationList"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-            <el-form-item label="部门">
-              <el-select
-                v-model="queryParams.department"
-                placeholder="请选择部门"
-                clearable
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="item in departmentList"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-            <el-form-item label="团队">
-              <el-select
-                v-model="queryParams.team"
-                placeholder="请选择团队"
-                clearable
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="item in teamList"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-    </div>
+  <div class="crm-page">
+    <el-container class="outer-container">
 
-    <!-- 选项卡切换 -->
-    <div class="tabsWrap regular_shadow_tiling">
-      <el-tabs v-model="activeTab" class="demo-tabs" @tab-change="handleTabChange">
-        <el-tab-pane label="当前情况" name="current" />
-        <el-tab-pane label="当日累计" name="daily" />
-      </el-tabs>
-    </div>
-
-    <!-- 数据展示区域 -->
-    <div class="dataWrap">
-      <!-- 当前情况选项卡 -->
-      <template v-if="activeTab === 'current'">
-        <!-- 团队指标 -->
-        <div class="table-card regular_shadow_tiling">
-          <div class="table-header">
-            <h3>团队指标</h3>
-          </div>
-          <el-table
-            :data="currentTeamData"
-            border
-            stripe
-            style="width: 100%"
-          >
-            <el-table-column type="index" label="序号" width="60" align="center" />
-            <el-table-column prop="team" label="团队" min-width="200" show-overflow-tooltip />
-            <el-table-column prop="queueCount" label="排队人数" width="120" align="center" />
-            <el-table-column prop="manualSessions" label="人工会话数" width="120" align="center" />
-            <el-table-column prop="onlineAgents" label="在线坐席数" width="120" align="center" />
-          </el-table>
+      <el-aside width="64px" class="ultra-side">
+        <div class="avatar-box">
+          <el-avatar :size="40" src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" />
+          <div class="status-dot"></div>
         </div>
-
-        <!-- 队列指标 -->
-        <div class="table-card regular_shadow_tiling">
-          <div class="table-header">
-            <h3>队列指标</h3>
-          </div>
-          <el-table
-            :data="currentQueueData"
-            border
-            stripe
-            style="width: 100%"
-          >
-            <el-table-column type="index" label="序号" width="60" align="center" />
-            <el-table-column prop="queue" label="队列" min-width="150" show-overflow-tooltip />
-            <el-table-column prop="queueCount" label="排队人数" width="120" align="center" />
-            <el-table-column prop="longestWaitTime" label="排队最长等待时长" width="180" align="center" />
-          </el-table>
+        <div class="side-icons">
+          <el-icon class="active"><ChatLineRound /></el-icon>
+          <el-icon><Postcard /></el-icon>
+          <el-icon><Operation /></el-icon>
         </div>
+      </el-aside>
 
-        <!-- 坐席指标 -->
-        <div class="table-card regular_shadow_tiling">
-          <div class="table-header">
-            <h3>坐席指标</h3>
+      <el-aside width="280px" class="session-aside">
+        <div class="session-header">
+          全部会话 (2/3) <el-icon><ArrowDown /></el-icon>
+        </div>
+        <el-scrollbar>
+          <div v-for="i in 5" :key="i" class="session-card" :class="{ active: i === 1 }">
+            <el-avatar :size="32" shape="square" class="user-head" />
+            <div class="card-content">
+              <div class="card-top">
+                <span class="nick">张三</span>
+                <span class="time">15:32</span>
+              </div>
+              <div class="card-bottom">
+                <span class="preview">[图片]</span>
+                <span class="status-text">待办中</span>
+              </div>
+            </div>
           </div>
-          <el-table
-            :data="currentAgentData"
-            border
-            stripe
-            style="width: 100%"
-          >
-            <el-table-column type="index" label="序号" width="60" align="center" />
-            <el-table-column prop="name" label="姓名" width="100" align="center" />
-            <el-table-column prop="ntAccount" label="NT账号" width="150" align="center" />
-            <el-table-column prop="status" label="当前状态" width="120" align="center">
-              <template #default="scope">
-                <div class="status-cell">
-                  <span :class="['status-dot', getStatusClass(scope.row.status)]" />
-                  <span>{{ scope.row.status }}</span>
+        </el-scrollbar>
+        <div class="monitor-info">
+          <div class="monitor-title">监控信息</div>
+          <div class="monitor-row"><span>队列</span><span>排队数量</span></div>
+          <div class="monitor-item"><span>四川核保专家专属</span><span>0</span></div>
+          <div class="monitor-item"><span>四川核保专家专属</span><span>0</span></div>
+        </div>
+      </el-aside>
+
+      <el-container class="chat-container">
+        <el-header class="chat-header" height="45px">
+          <span class="current-user">张三</span>
+          <span class="online-tag">● 在线</span>
+          <div class="header-right">持续 23:59:12</div>
+        </el-header>
+
+        <el-main class="chat-main">
+          <div class="msg-wrapper">
+            <div class="time-divider">15:12:31</div>
+
+            <div class="chat-item left">
+              <el-avatar :size="32" />
+              <div class="bubble">文案文案文案文案文案</div>
+            </div>
+
+            <div class="sys-tip">你已接受转接话务员 <span class="name">小发</span></div>
+
+            <div class="chat-item right">
+              <div class="bubble blue">
+                为了维护您的权益，请<span class="link">点击此处</span>完成身份验证，谢谢！
+              </div>
+              <el-avatar :size="32" />
+            </div>
+
+            <div class="chat-item left">
+              <el-avatar :size="32" />
+              <div class="bubble-image">
+                <img src="https://via.placeholder.com/200x120" alt="content" />
+              </div>
+            </div>
+          </div>
+        </el-main>
+
+        <el-footer class="chat-footer" height="180px">
+          <div class="tool-bar">
+            <el-icon><Emoji /></el-icon>
+            <el-icon><Picture /></el-icon>
+            <el-icon><Scissor /></el-icon>
+            <el-icon><FolderOpened /></el-icon>
+            <el-icon><ChatDotSquare /></el-icon>
+          </div>
+          <el-input type="textarea" :rows="4" placeholder="请输入..." resize="none" class="no-border-input" />
+          <div class="footer-btns">
+            <el-button size="small" type="danger" plain>外呼</el-button>
+            <el-button size="small" type="danger" plain>满意度评价推送</el-button>
+            <el-button size="small" type="danger">结束会话</el-button>
+            <el-button size="small" type="primary" class="send-btn">发送</el-button>
+          </div>
+        </el-footer>
+      </el-container>
+
+      <el-aside width="500px" class="right-panel">
+        <el-tabs v-model="activeTab" class="biz-tabs">
+          <el-tab-pane label="客户资料" name="1" />
+          <el-tab-pane label="快捷消息" name="2" />
+          <el-tab-pane label="创建工单(张三)" name="3">
+            <div class="biz-section">
+              <div class="biz-title">
+                <span class="text">保单列表</span>
+                <el-link type="primary" :underline="false" size="small">显示所有保单</el-link>
+              </div>
+              <el-table :data="tableData" border size="small" class="compact-table">
+                <el-table-column type="selection" width="35" />
+                <el-table-column prop="id" label="序号" width="50" />
+                <el-table-column prop="org" label="机构名称" />
+                <el-table-column prop="city" label="投保城市" width="80" />
+                <el-table-column prop="no" label="保单号" />
+                <el-table-column label="保单状态" width="80">
+                  <template #default><span class="status-ok">● 正常</span></template>
+                </el-table-column>
+              </el-table>
+            </div>
+
+            <div class="biz-section mt-15">
+              <div class="biz-title">
+                <span class="text">工单号: TK202506230001</span>
+                <div class="title-right">
+                  <span>公司: 友邦保险</span>
+                  <span>创建人: 张三</span>
                 </div>
-              </template>
-            </el-table-column>
-            <el-table-column prop="statusDuration" label="当前状态持续时长" width="180" align="center" />
-            <el-table-column prop="serviceTeam" label="当前服务团队" min-width="200" show-overflow-tooltip />
-            <el-table-column prop="customerCount" label="对话中客户数" width="130" align="center" />
-            <el-table-column prop="belongingQueue" label="所属队列" width="120" align="center" />
-          </el-table>
-        </div>
-      </template>
-
-      <!-- 当日累计选项卡 -->
-      <template v-if="activeTab === 'daily'">
-        <!-- 团队指标 -->
-        <div class="table-card regular_shadow_tiling">
-          <div class="table-header">
-            <h3>团队指标</h3>
-          </div>
-          <el-table
-            :data="dailyTeamData"
-            border
-            stripe
-            style="width: 100%"
-          >
-            <el-table-column type="index" label="序号" width="60" align="center" />
-            <el-table-column prop="team" label="团队" min-width="200" show-overflow-tooltip />
-            <el-table-column prop="manualTransferCount" label="转人工量" width="120" align="center" />
-            <el-table-column prop="manualTransferRate" label="转人工率" width="120" align="center" />
-            <el-table-column prop="manualServiceCount" label="人工服务量" width="120" align="center" />
-            <el-table-column prop="manualServiceRate" label="人工服务率" width="120" align="center" />
-          </el-table>
-        </div>
-
-        <!-- 服务来源指标和队列指标并排 -->
-        <el-row :gutter="16">
-          <el-col :xs="24" :sm="12">
-            <div class="table-card regular_shadow_tiling">
-              <div class="table-header">
-                <h3>服务来源指标</h3>
               </div>
-              <el-table
-                :data="serviceSourceData"
-                border
-                stripe
-                style="width: 100%"
-              >
-                <el-table-column type="index" label="序号" width="60" align="center" />
-                <el-table-column prop="source" label="服务来源" min-width="150" show-overflow-tooltip />
-                <el-table-column prop="consultationCount" label="咨询量" width="120" align="center" />
-              </el-table>
+              <el-form label-position="top" size="small" class="custom-form">
+                <el-row :gutter="15">
+                  <el-col :span="12">
+                    <el-form-item label="客户姓名" required>
+                      <el-input value="张三">
+                        <template #suffix><span class="vip-tag">VIP</span></template>
+                      </el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="联系人姓名" required>
+                      <el-input value="张三" />
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="15">
+                  <el-col :span="12">
+                    <el-form-item label="事件属性" required>
+                      <el-select v-model="formValue" style="width:100%"><el-option label="一般" value="1" /></el-select>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="工单来源" required>
+                      <el-select placeholder="请选择" style="width:100%"></el-select>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                <el-form-item label="业务分类" required>
+                  <el-button type="danger" plain size="small">+ 添加分类</el-button>
+                </el-form-item>
+              </el-form>
             </div>
-          </el-col>
-          <el-col :xs="24" :sm="12">
-            <div class="table-card regular_shadow_tiling">
-              <div class="table-header">
-                <h3>队列指标</h3>
-              </div>
-              <el-table
-                :data="dailyQueueData"
-                border
-                stripe
-                style="width: 100%"
-              >
-                <el-table-column type="index" label="序号" width="60" align="center" />
-                <el-table-column prop="queue" label="队列" min-width="120" show-overflow-tooltip />
-                <el-table-column prop="manualTransferCount" label="转人工量" width="120" align="center" />
-                <el-table-column prop="manualServiceCount" label="人工服务量" width="120" align="center" />
-                <el-table-column prop="manualServiceRate" label="人工服务率" width="120" align="center" />
-              </el-table>
-            </div>
-          </el-col>
-        </el-row>
+          </el-tab-pane>
+        </el-tabs>
+      </el-aside>
 
-        <!-- 坐席指标 -->
-        <div class="table-card regular_shadow_tiling">
-          <div class="table-header">
-            <h3>坐席指标</h3>
-          </div>
-          <el-table
-            :data="dailyAgentData"
-            border
-            stripe
-            style="width: 100%"
-          >
-            <el-table-column type="index" label="序号" width="60" align="center" />
-            <el-table-column prop="name" label="姓名" width="100" align="center" sortable />
-            <el-table-column prop="ntAccount" label="NT账号" width="150" align="center" sortable />
-            <el-table-column prop="serviceCount" label="坐席服务量" width="120" align="center" sortable />
-            <el-table-column prop="transferOutCount" label="坐席转出量" width="120" align="center" sortable />
-            <el-table-column prop="transferOutRate" label="坐席转出率" width="120" align="center" sortable />
-            <el-table-column prop="avgServiceDuration" label="平均人工服务时长" width="180" align="center" sortable />
-            <el-table-column prop="unsatisfiedCount" label="不满意评价量" width="140" align="center" sortable />
-          </el-table>
-        </div>
-      </template>
-    </div>
+    </el-container>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
+import {
+  ChatLineRound, Postcard, Operation, ArrowDown,
+  Picture, Scissor, FolderOpened, ChatDotSquare
+} from '@element-plus/icons-vue'
 
-// 查询参数
-const queryParams = reactive({
-  organization: '',
-  department: '',
-  team: ''
-})
-
-// 选项卡
-const activeTab = ref('current')
-
-// 机构列表假数据
-const organizationList = ref([
-  { label: '总部', value: 'org1' },
-  { label: '北京分公司', value: 'org2' },
-  { label: '上海分公司', value: 'org3' },
-  { label: '广州分公司', value: 'org4' },
-  { label: '深圳分公司', value: 'org5' }
-])
-
-// 部门列表假数据
-const departmentList = ref([
-  { label: '客服部', value: 'dept1' },
-  { label: '销售部', value: 'dept2' },
-  { label: '技术支持部', value: 'dept3' },
-  { label: '运营部', value: 'dept4' },
-  { label: '市场部', value: 'dept5' }
-])
-
-// 团队列表假数据
-const teamList = ref([
-  { label: 'VIP服务团队/一线团队/客服一组', value: 'team1' },
-  { label: '普通服务团队/二线团队/客服二组', value: 'team2' },
-  { label: '技术支持团队/技术组/技术一组', value: 'team3' },
-  { label: '销售团队/销售组/销售一组', value: 'team4' },
-  { label: '运营团队/运营组/运营一组', value: 'team5' }
-])
-
-// 格式化时长为 "00时12分20秒" 格式
-const formatDuration = (seconds) => {
-  if (!seconds) return '00时00分00秒'
-  const hours = Math.floor(seconds / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
-  const secs = seconds % 60
-  return `${String(hours).padStart(2, '0')}时${String(minutes).padStart(2, '0')}分${String(secs).padStart(2, '0')}秒`
-}
-
-// 获取状态样式类
-const getStatusClass = (status) => {
-  const statusMap = {
-    离线: 'status-offline',
-    忙碌: 'status-busy',
-    支援: 'status-support',
-    在线: 'status-online'
-  }
-  return statusMap[status] || 'status-offline'
-}
-
-// 当前情况 - 团队指标数据
-const currentTeamData = ref([
-  { team: 'VIP服务团队/一线团队/客服一组', queueCount: 0, manualSessions: 7, onlineAgents: 32 },
-  { team: '普通服务团队/二线团队/客服二组', queueCount: 3, manualSessions: 15, onlineAgents: 28 },
-  { team: '技术支持团队/技术组/技术一组', queueCount: 1, manualSessions: 5, onlineAgents: 12 },
-  { team: '销售团队/销售组/销售一组', queueCount: 2, manualSessions: 10, onlineAgents: 20 },
-  { team: '运营团队/运营组/运营一组', queueCount: 0, manualSessions: 8, onlineAgents: 18 }
-])
-
-// 当前情况 - 队列指标数据
-const currentQueueData = ref([
-  { queue: 'VIP队列', queueCount: 5, longestWaitTime: formatDuration(740) },
-  { queue: '普通队列', queueCount: 12, longestWaitTime: formatDuration(1520) },
-  { queue: '匿名队列', queueCount: 3, longestWaitTime: formatDuration(890) },
-  { queue: '售前队列', queueCount: 8, longestWaitTime: formatDuration(1120) },
-  { queue: '投诉队列', queueCount: 2, longestWaitTime: formatDuration(2340) }
-])
-
-// 当前情况 - 坐席指标数据
-const currentAgentData = ref([
-  {
-    name: '张三',
-    ntAccount: 'NCSC094_1',
-    status: '离线',
-    statusDuration: formatDuration(1289),
-    serviceTeam: 'VIP服务团队/一线团队',
-    customerCount: 0,
-    belongingQueue: 'VIP/普通'
-  },
-  {
-    name: '李四',
-    ntAccount: 'NCSC094_2',
-    status: '忙碌',
-    statusDuration: formatDuration(2340),
-    serviceTeam: '普通服务团队/二线团队',
-    customerCount: 5,
-    belongingQueue: '普通'
-  },
-  {
-    name: '王五',
-    ntAccount: 'NCSC094_3',
-    status: '支援',
-    statusDuration: formatDuration(890),
-    serviceTeam: '技术支持团队/技术组',
-    customerCount: 2,
-    belongingQueue: 'VIP'
-  },
-  {
-    name: '赵六',
-    ntAccount: 'NCSC094_4',
-    status: '在线',
-    statusDuration: formatDuration(1560),
-    serviceTeam: '销售团队/销售组',
-    customerCount: 1,
-    belongingQueue: '普通/VIP'
-  },
-  {
-    name: '钱七',
-    ntAccount: 'NCSC094_5',
-    status: '在线',
-    statusDuration: formatDuration(2100),
-    serviceTeam: '运营团队/运营组',
-    customerCount: 3,
-    belongingQueue: '普通'
-  }
-])
-
-// 当日累计 - 团队指标数据
-const dailyTeamData = ref([
-  { team: 'VIP服务团队/一线团队/客服一组', manualTransferCount: 512, manualTransferRate: '14.1%', manualServiceCount: 512, manualServiceRate: '100.00%' },
-  { team: '普通服务团队/二线团队/客服二组', manualTransferCount: 856, manualTransferRate: '18.5%', manualServiceCount: 856, manualServiceRate: '100.00%' },
-  { team: '技术支持团队/技术组/技术一组', manualTransferCount: 234, manualTransferRate: '12.3%', manualServiceCount: 234, manualServiceRate: '100.00%' },
-  { team: '销售团队/销售组/销售一组', manualTransferCount: 678, manualTransferRate: '16.8%', manualServiceCount: 678, manualServiceRate: '100.00%' },
-  { team: '运营团队/运营组/运营一组', manualTransferCount: 445, manualTransferRate: '15.2%', manualServiceCount: 445, manualServiceRate: '100.00%' }
-])
-
-// 当日累计 - 服务来源指标数据
-const serviceSourceData = ref([
-  { source: '官微', consultationCount: 97 },
-  { source: '官网网销', consultationCount: 68 },
-  { source: '互联网第三方-其他', consultationCount: 5 },
-  { source: '爱健康', consultationCount: 13 },
-  { source: '友邦友享', consultationCount: 3216 }
-])
-
-// 当日累计 - 队列指标数据
-const dailyQueueData = ref([
-  { queue: 'VIP', manualTransferCount: 67, manualServiceCount: 67, manualServiceRate: '100.00%' },
-  { queue: '匿名', manualTransferCount: 9, manualServiceCount: 9, manualServiceRate: '100.00%' },
-  { queue: '普通', manualTransferCount: 416, manualServiceCount: 416, manualServiceRate: '100.00%' },
-  { queue: '售前', manualTransferCount: 11, manualServiceCount: 11, manualServiceRate: '100.00%' },
-  { queue: '投诉', manualTransferCount: 4, manualServiceCount: 4, manualServiceRate: '100.00%' },
-  { queue: '退保', manualTransferCount: 5, manualServiceCount: 5, manualServiceRate: '100.00%' }
-])
-
-// 当日累计 - 坐席指标数据
-const dailyAgentData = ref([
-  { name: '张三', ntAccount: 'NCSC094_1', serviceCount: 27, transferOutCount: 0, transferOutRate: '0.00%', avgServiceDuration: formatDuration(1289), unsatisfiedCount: 0 },
-  { name: '李四', ntAccount: 'NCSC094_2', serviceCount: 45, transferOutCount: 2, transferOutRate: '4.44%', avgServiceDuration: formatDuration(2340), unsatisfiedCount: 1 },
-  { name: '王五', ntAccount: 'NCSC094_3', serviceCount: 32, transferOutCount: 1, transferOutRate: '3.13%', avgServiceDuration: formatDuration(890), unsatisfiedCount: 0 },
-  { name: '赵六', ntAccount: 'NCSC094_4', serviceCount: 38, transferOutCount: 0, transferOutRate: '0.00%', avgServiceDuration: formatDuration(1560), unsatisfiedCount: 2 },
-  { name: '钱七', ntAccount: 'NCSC094_5', serviceCount: 52, transferOutCount: 3, transferOutRate: '5.77%', avgServiceDuration: formatDuration(2100), unsatisfiedCount: 1 }
-])
-
-// 选项卡切换处理
-const handleTabChange = (tabName) => {
-  console.log('切换到:', tabName)
-  // 这里可以添加数据刷新逻辑
-}
+const activeTab = ref('3')
+const formValue = ref('1')
+const tableData = Array(5).fill({ id: 1, org: '北京总经办', city: '北京', no: '0000000000' })
 </script>
 
 <style lang="scss" scoped>
-.app-container {
-  padding: 20px;
-}
+/* 基础布局 */
+.crm-page { height: 100vh; background: #fff; overflow: hidden; color: #333; }
+.outer-container { height: 100%; }
 
-.queryWrap {
-  margin-bottom: 20px;
-  padding: 20px;
-}
+/* 1. 极窄侧边栏 */
+.ultra-side { background: #f8f9fb; border-right: 1px solid #e6e6e6; display: flex; flex-direction: column; align-items: center; padding: 15px 0; }
+.avatar-box { position: relative; margin-bottom: 30px; }
+.status-dot { width: 10px; height: 10px; background: #67c23a; border: 2px solid #fff; border-radius: 50%; position: absolute; bottom: 0; right: 0; }
+.side-icons { display: flex; flex-direction: column; gap: 25px; color: #909399; font-size: 22px; cursor: pointer; }
+.side-icons .active { color: #f56c6c; }
 
-.tabsWrap {
-  margin-bottom: 20px;
-  padding: 10px 20px;
-}
+/* 2. 会话列表 */
+.session-aside { border-right: 1px solid #e6e6e6; display: flex; flex-direction: column; }
+.session-header { padding: 12px 15px; font-weight: bold; font-size: 13px; border-bottom: 1px solid #f0f0f0; }
+.session-card { padding: 12px 15px; display: flex; gap: 10px; border-bottom: 1px solid #f8f8f8; cursor: pointer; }
+.session-card.active { background: #edf5ff; }
+.card-content { flex: 1; }
+.card-top { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+.card-bottom { display: flex; justify-content: space-between; font-size: 12px; color: #999; }
+.status-text { color: #f56c6c; }
 
-.dataWrap {
-  .table-card {
-    margin-bottom: 20px;
-    padding: 20px;
+.monitor-info { border-top: 1px solid #eee; padding: 10px; font-size: 12px; }
+.monitor-title { font-weight: bold; margin-bottom: 8px; border-left: 3px solid #f56c6c; padding-left: 6px; }
+.monitor-row { display: flex; justify-content: space-between; color: #999; padding: 4px 0; }
+.monitor-item { display: flex; justify-content: space-between; padding: 4px 0; }
 
-    .table-header {
-      margin-bottom: 15px;
+/* 3. 聊天区 */
+.chat-container { background: #fff; }
+.chat-header { border-bottom: 1px solid #eee; display: flex; align-items: center; padding: 0 15px; font-size: 14px; }
+.online-tag { color: #67c23a; font-size: 12px; margin-left: 10px; }
+.header-right { margin-left: auto; color: #999; font-size: 12px; }
+.chat-main { background: #f4f5f7; padding: 15px; }
+.time-divider { text-align: center; color: #bbb; font-size: 12px; margin: 10px 0; }
+.chat-item { display: flex; gap: 10px; margin-bottom: 20px; }
+.chat-item.right { justify-content: flex-end; }
+.bubble { padding: 8px 12px; border-radius: 4px; background: #fff; max-width: 70%; font-size: 13px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.bubble.blue { background: #eef7ff; color: #409eff; }
+.bubble-image img { border-radius: 4px; border: 1px solid #ddd; }
+.sys-tip { text-align: center; font-size: 12px; color: #999; margin: 15px 0; }
+.sys-tip .name { color: #f56c6c; }
 
-      h3 {
-        margin: 0;
-        font-size: 16px;
-        font-weight: 600;
-        color: #343741;
-      }
-    }
-  }
-}
+.chat-footer { border-top: 1px solid #eee; padding: 10px; display: flex; flex-direction: column; }
+.tool-bar { display: flex; gap: 15px; font-size: 18px; color: #666; margin-bottom: 8px; }
+.footer-btns { display: flex; gap: 10px; justify-content: flex-start; margin-top: auto; }
+.send-btn { margin-left: auto !important; }
 
-.status-cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
+/* 4. 右侧面板 */
+.right-panel { border-left: 1px solid #e6e6e6; padding: 0 15px; }
+.biz-section { margin-top: 15px; }
+.biz-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-left: 3px solid #f56c6c; padding-left: 8px; }
+.biz-title .text { font-weight: bold; font-size: 14px; }
+.title-right { font-size: 12px; color: #666; display: flex; gap: 10px; }
+.status-ok { color: #67c23a; }
+.vip-tag { background: #e6a23c; color: #fff; font-size: 10px; padding: 1px 4px; border-radius: 2px; }
 
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-
-  &.status-offline {
-    background-color: #909399;
-  }
-
-  &.status-busy {
-    background-color: #F56C6C;
-  }
-
-  &.status-support {
-    background-color: #409EFF;
-  }
-
-  &.status-online {
-    background-color: #67C23A;
-  }
-}
-
-:deep(.el-tabs) {
-  .el-tabs__item {
-    font-size: 16px;
-
-    &.is-active {
-      color: #F56C6C;
-      font-weight: 600;
-    }
-  }
-
-  .el-tabs__active-bar {
-    background-color: #F56C6C;
-  }
-}
+/* Element Plus 重写 */
+:deep(.el-tabs__item) { font-size: 13px; height: 40px; }
+:deep(.el-form-item__label) { padding-bottom: 4px !important; font-size: 12px; color: #666; }
+:deep(.el-input__inner) { font-size: 12px; }
+:deep(.no-border-input .el-textarea__inner) { border: none; box-shadow: none; padding: 0; }
+.mt-15 { margin-top: 15px; }
 </style>
