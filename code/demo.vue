@@ -1,0 +1,146 @@
+<template>
+  <div class="file-preview-wrapper" :style="{ height: height }">
+    <!-- PDF 预览 -->
+    <pdf v-if="fileType === 'pdf'" :src="fileSrc" :style="{ width: '100%', height: '100%' }" />
+
+    <!-- DOCX 预览 -->
+    <docx
+      v-else-if="['doc', 'docx'].includes(fileType)"
+      :src="fileSrc"
+      :style="{ width: '100%', height: '100%', overflow: 'auto' }"
+    >
+      <template #error>
+        <div class="error">无法加载 Word 文档。</div>
+      </template>
+    </docx>
+
+    <!-- Excel 预览 -->
+    <excel
+      v-else-if="['xls', 'xlsx'].includes(fileType)"
+      :src="fileSrc"
+      :style="{ width: '100%', height: '100%', overflow: 'auto' }"
+    >
+      <template #error>
+        <div class="error">无法加载 Excel 文件。</div>
+      </template>
+    </excel>
+
+    <!-- PPTX 预览 -->
+    <pptx
+      v-else-if="['ppt', 'pptx'].includes(fileType)"
+      :src="fileSrc"
+      :style="{ width: '100%', height: '100%' }"
+    >
+      <template #error>
+        <div class="error">无法加载 PPT 文件。</div>
+      </template>
+    </pptx>
+
+    <!-- TXT 预览 -->
+    <div
+      v-else-if="fileType === 'txt'"
+      class="txt-preview"
+      :style="{ height: '100%', overflow: 'auto', padding: '16px', whiteSpace: 'pre-wrap' }"
+    >
+      {{ textContent }}
+    </div>
+
+    <!-- 不支持的格式 -->
+    <div v-else class="unsupported">
+      不支持的文件类型: {{ fileType }}<br />
+      <a :href="fileSrc" target="_blank" rel="noopener">点击下载</a>
+    </div>
+  </div>
+</template>
+
+<script setup>
+// 使用统一的 vue-office 包
+import { Pdf as pdf, Docx as docx, Excel as excel, Pptx as pptx } from 'vue-office'
+
+import { ref, computed, watch } from 'vue'
+import axios from 'axios'
+
+const props = defineProps({
+  src: {
+    type: String,
+    required: true
+  },
+  height: {
+    type: String,
+    default: '600px'
+  }
+})
+
+const textContent = ref('')
+const fileType = computed(() => {
+  const match = props.src.match(/\.([a-zA-Z0-9]+)(\?.*)?$/)
+  return match ? match[1].toLowerCase() : ''
+})
+const fileSrc = computed(() => props.src)
+
+const loadTxtContent = async () => {
+  try {
+    const res = await axios.get(props.src)
+    textContent.value = typeof res.data === 'string' ? res.data : JSON.stringify(res.data)
+  } catch (err) {
+    console.error('Failed to load txt:', err)
+    textContent.value = '无法加载文本内容。'
+  }
+}
+
+watch(
+  () => props.src,
+  (newSrc) => {
+    if (newSrc && fileType.value === 'txt') {
+      loadTxtContent()
+    }
+  },
+  { immediate: true }
+)
+</script>
+
+<style scoped>
+.file-preview-wrapper {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.error,
+.unsupported {
+  padding: 20px;
+  text-align: center;
+  color: #888;
+}
+
+.unsupported a {
+  color: #1890ff;
+  text-decoration: underline;
+}
+
+.txt-preview {
+  font-family: monospace;
+  line-height: 1.6;
+  background: #f5f5f5;
+  color: #333;
+}
+</style>
+✅ 使用示例：App.vue
+<!-- App.vue -->
+<template>
+  <div id="app" style="padding: 20px;">
+    <h2>Vue3 文件预览（修复 Vite 导入问题）</h2>
+
+    <!-- 示例 PDF -->
+    <FilePreview
+      src="https://raw.githubusercontent.com/mozilla/pdf.js/main/web/compressed.tracemonkey-pldi-09.pdf"
+      height="700px"
+    />
+  </div>
+</template>
+
+<script setup>
+import FilePreview from './components/FilePreview.vue'
+</script>
