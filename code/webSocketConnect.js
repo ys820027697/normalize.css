@@ -19,6 +19,7 @@ let myEtalkEvent = null
 async function initializeEtalk () {
   const chatStore = useChatStore()
 
+
   // 优先从 Pinia store 获取 myEtalkEvent
   const storedMyEtalkEvent = chatStore.getMyEtalkEvent()
 
