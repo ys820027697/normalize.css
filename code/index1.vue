@@ -31,14 +31,14 @@
             <span>四川核保专家专属</span><span>0</span>
           </div>
         </div>
-      </el-aside>
+      </aside>
 
       <el-container class="chat-main">
         <el-header height="40px" class="chat-header">
           <span class="name">张三</span>
           <span class="status-dot">● 持续 23:59:12</span>
         </el-header>
-        
+
         <el-main class="message-view">
           <div class="msg-box">
             <div class="msg-time">15:12:31</div>
@@ -52,7 +52,7 @@
               <el-avatar :size="32" />
             </div>
           </div>
-        </el-main>
+        </main>
 
         <el-footer height="160px" class="input-area">
           <div class="tools">
@@ -64,8 +64,8 @@
             <el-button size="small" type="danger" plain>满意度评价</el-button>
             <el-button size="small" type="primary">发送</el-button>
           </div>
-        </el-footer>
-      </el-container>
+        </footer>
+      </section>
 
       <el-aside width="480px" class="biz-aside">
         <el-tabs v-model="activeTab" class="full-tabs">
@@ -95,7 +95,7 @@
                   <span class="title-text">工单号: TK202506230001</span>
                 </div>
                 <div class="info-bar">公司: 友邦保险 | 部门: 消保部 | 创建人: 张三</div>
-                
+
                 <el-form label-position="top" size="small" class="compact-form">
                   <el-row :gutter="10">
                     <el-col :span="12">
@@ -197,7 +197,7 @@ $border: #e4e7ed;
   .chat-main {
     background: #f9fbff;
     .chat-header { border-bottom: 1px solid $border; background: #fff; display: flex; align-items: center; .status-dot { color: #52c41a; font-size: 12px; margin-left: 10px; } }
-    .message-view { 
+    .message-view {
       padding: 15px;
       .msg-time { text-align: center; color: #ccc; font-size: 12px; margin-bottom: 15px; }
       .msg-item { display: flex; gap: 8px; margin-bottom: 15px; }
