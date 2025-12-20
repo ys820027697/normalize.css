@@ -11,5 +11,8 @@
   "repository": "necolas/normalize.css",
   "license": "MIT",
   "bugs": "https://github.com/necolas/normalize.css/issues",
-  "homepage": "https://necolas.github.io/normalize.css"
+  "homepage": "https://necolas.github.io/normalize.css",
+  "dependencies": {
+    "vue-office": "^0.0.5"
+  }
 }
