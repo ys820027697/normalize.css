@@ -11,5 +11,13 @@
   "repository": "necolas/normalize.css",
   "license": "MIT",
   "bugs": "https://github.com/necolas/normalize.css/issues",
-  "homepage": "https://necolas.github.io/normalize.css"
+  "homepage": "https://necolas.github.io/normalize.css",
+  "dependencies": {
+    "@vue-office/docx": "^1.6.3",
+    "@vue-office/excel": "^1.7.14",
+    "@vue-office/pdf": "^2.0.10",
+    "@vue-office/pptx": "^1.0.1",
+    "install": "^0.13.0",
+    "vue-demi": "0.14.6"
+  }
 }
